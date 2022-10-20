@@ -48,7 +48,7 @@ function afterRender(state) {
       };
 
       store.Direction.from = from;
-      store.Map.from = from;
+      store.Route.from = from;
 
       const to = {
         street: inputList.toStreet.value,
@@ -57,7 +57,7 @@ function afterRender(state) {
       };
 
       store.Direction.to = to;
-      store.Map.to = to;
+      store.Route.to = to;
 
       if (event.submitter.name === "showDirections") {
         axios.get(`http://www.mapquestapi.com/directions/v2/route?key=${process.env.MAPQUEST_API_KEY}&from=${from.street},${from.city},${from.state}&to=${to.street},+${to.city},+${to.state}`)
@@ -72,7 +72,7 @@ function afterRender(state) {
       }
 
       if (event.submitter.name === "showRoute") {
-        router.navigate("/Map");
+        router.navigate("/Route");
       }
     });
   }
