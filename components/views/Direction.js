@@ -61,13 +61,9 @@ export default state => html`
         />
       </div>
     </div>
-    <input type="submit" name="submitDirection" value="Submit Destination" />
+    <input type="submit" name="showDirections" value="Show Directions" />
+    <input type="submit" name="showRoute" value="Show Route" />
   </form>
-
-  <h2>Route Map</h2>
-  <div class="routeMap">
-    ${outputMap(state)}
-  </div>
 
   <h2>Here are your directions</h2>
   <div class="directions">
@@ -85,8 +81,3 @@ function checkDirection(maneuvers) {
   return `Please Submit Addresses Above!`;
 }
 
-function outputMap(state) {
-  if (typeof state.from !== 'undefined' && typeof state.to !== 'undefined') {
-    return `<img src="https://www.mapquestapi.com/staticmap/v5/map?key=${process.env.MAPQUEST_API_KEY}&start=${state.from.street},${state.from.city},${state.from.state}&end=${state.to.street},+${state.to.city},+${state.to.state}&size=600,400@2x" alt="">`
-  }
-}
