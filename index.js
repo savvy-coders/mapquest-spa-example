@@ -28,6 +28,7 @@ function afterRender(state) {
     // DO DOM stuff here
     console.log("Hello");
   }
+
   if (state.view === "Direction") {
     const formEntry = document.querySelector("form");
     const directionList = document.querySelector(".directions");
@@ -60,6 +61,12 @@ function afterRender(state) {
       store.Route.to = to;
 
       if (event.submitter.name === "showDirections") {
+
+        /*
+          Please refer to the documentation:
+          https://developer.mapquest.com/documentation/directions-api/
+        */
+
         axios.get(`http://www.mapquestapi.com/directions/v2/route?key=${process.env.MAPQUEST_API_KEY}&from=${from.street},${from.city},${from.state}&to=${to.street},+${to.city},+${to.state}`)
         .then(response => {
           store.Direction.directions = response.data;
@@ -75,6 +82,25 @@ function afterRender(state) {
         router.navigate("/Route");
       }
     });
+  }
+
+  if (state.view === "Map") {
+
+    /*
+      Please refer to the documentation:
+      https://developer.mapquest.com/documentation/mapquest-js/v1.3/
+    */
+
+    L.mapquest.key = process.env.MAPQUEST_API_KEY;
+
+    // 'map' refers to a <div> element with the ID map
+    const map = L.mapquest.map('map', {
+      center: [37.7749, -122.4194],
+      layers: L.mapquest.tileLayer('map'),
+      zoom: 12
+    });
+
+    map.addControl(L.mapquest.control());
   }
 }
 

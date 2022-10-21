@@ -51,6 +51,10 @@ footer {
   max-width: 1000px;
 }
 
+#map {
+  height: 600px;
+}
+
 @media (max-width: 549px){
   .hidden--mobile {
     display: none !important;
