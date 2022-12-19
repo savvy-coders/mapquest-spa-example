@@ -67,15 +67,15 @@ function afterRender(state) {
           https://developer.mapquest.com/documentation/directions-api/
         */
 
-        axios.get(`http://www.mapquestapi.com/directions/v2/route?key=${process.env.MAPQUEST_API_KEY}&from=${from.street},${from.city},${from.state}&to=${to.street},+${to.city},+${to.state}`)
-        .then(response => {
-          store.Direction.directions = response.data;
-          store.Direction.directions.maneuvers = response.data.route.legs[0].maneuvers;
-          router.navigate("/Direction");
-        })
-        .catch(error => {
-          console.log("It puked", error);
-        });
+        axios.get(`http://www.mapquestapi.com/directions/v2/route?key=${process.env.MAPQUEST_API_KEY}&from=${from.street},+${from.city},+${from.state}&to=${to.street},+${to.city},+${to.state}`)
+          .then(response => {
+            store.Direction.directions = response.data;
+            store.Direction.directions.maneuvers = response.data.route.legs[0].maneuvers;
+            router.navigate("/Direction");
+          })
+          .catch(error => {
+            console.log("It puked", error);
+          });
       }
 
       if (event.submitter.name === "showRoute") {
@@ -98,6 +98,13 @@ function afterRender(state) {
       center: [37.7749, -122.4194],
       layers: L.mapquest.tileLayer('map'),
       zoom: 12
+    });
+
+    var directions = L.mapquest.directions();
+    
+    directions.route({
+      start: 'Washington, DC',
+      end: 'New York, NY'
     });
 
     map.addControl(L.mapquest.control());
