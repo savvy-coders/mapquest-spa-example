@@ -95,17 +95,43 @@ function afterRender(state) {
 
     // 'map' refers to a <div> element with the ID map
     const map = L.mapquest.map('map', {
-      center: [37.7749, -122.4194],
+      center: [42, -71],
       layers: L.mapquest.tileLayer('map'),
-      zoom: 12
+      zoom: 5
     });
 
-    var directions = L.mapquest.directions();
+    // var directions = L.mapquest.directions();
     
-    directions.route({
-      start: 'Washington, DC',
-      end: 'New York, NY'
-    });
+    // directions.route({
+    //   start: 'Washington, DC',
+    //   end: 'New York, NY'
+    // });
+
+    L.mapquest
+      .textMarker([42, -71], {
+        text: "Sample Marker",
+        subtext: "Click Here for More Details",
+        position: "right",
+        type: "marker",
+        hover: "Howdy",
+        icon: {
+          primaryColor: "#333333",
+          secondaryColor: "#333333",
+          size: "sm"
+        }
+      })
+      .addTo(map);
+
+      L.marker([30, -90], {
+        icon: L.mapquest.icons.marker({
+          primaryColor: '#22407F',
+          secondaryColor: '#3B5998',
+          shadow: true,
+          size: 'md'
+          // symbol: 'T'
+        })
+      })
+      .addTo(map);
 
     map.addControl(L.mapquest.control());
   }
