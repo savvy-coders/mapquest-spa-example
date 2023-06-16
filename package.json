@@ -2,11 +2,10 @@
   "name": "savvy-starter",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "scripts": {
     "parcel-build": "parcel build index.html && cp _redirects ./dist/",
-    "serve": "parcel index.html",
-    "app:watch": "nodemon --watch ./server -e js ./server/app.js",
-    "start": "node ./server/app.js"
+    "serve": "parcel index.html"
   },
   "keywords": [],
   "author": "",

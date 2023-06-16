@@ -36,8 +36,6 @@ function afterRender(state) {
     formEntry.addEventListener("submit", async event => {
       event.preventDefault();
 
-      console.log('matsinet-event:', event);
-
       // directionList.classList.toggle("directions");
       const inputList = event.target.elements;
       console.log("Input Element List", inputList);
@@ -96,16 +94,16 @@ function afterRender(state) {
     // 'map' refers to a <div> element with the ID map
     const map = L.mapquest.map('map', {
       center: [42, -71],
-      layers: L.mapquest.tileLayer('map'),
+      layers: [
+        L.mapquest.tileLayer('map'),
+        // Add OpenWeatherMap precipitation layer to the map
+        L.tileLayer(
+          `https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid=${process.env.OPEN_WEATHER_MAP_API_KEY}`,
+          { layer: "precipitation_new" }
+        )
+      ],
       zoom: 5
     });
-
-    // var directions = L.mapquest.directions();
-    
-    // directions.route({
-    //   start: 'Washington, DC',
-    //   end: 'New York, NY'
-    // });
 
     L.mapquest
       .textMarker([42, -71], {
@@ -134,6 +132,16 @@ function afterRender(state) {
       .addTo(map);
 
     map.addControl(L.mapquest.control());
+
+    L.mapquest.directionsControl({
+      routeSummary: {
+        enabled: false
+      },
+      narrativeControl: {
+        enabled: true,
+        compactResults: false
+      }
+    }).addTo(map);
   }
 }
 
