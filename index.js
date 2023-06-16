@@ -28,14 +28,13 @@ function afterRender(state) {
     // DO DOM stuff here
     console.log("Hello");
   }
+
   if (state.view === "Direction") {
     const formEntry = document.querySelector("form");
     const directionList = document.querySelector(".directions");
 
     formEntry.addEventListener("submit", async event => {
       event.preventDefault();
-
-      console.log('matsinet-event:', event);
 
       // directionList.classList.toggle("directions");
       const inputList = event.target.elements;
@@ -48,7 +47,7 @@ function afterRender(state) {
       };
 
       store.Direction.from = from;
-      store.Map.from = from;
+      store.Route.from = from;
 
       const to = {
         street: inputList.toStreet.value,
@@ -57,24 +56,92 @@ function afterRender(state) {
       };
 
       store.Direction.to = to;
-      store.Map.to = to;
+      store.Route.to = to;
 
       if (event.submitter.name === "showDirections") {
-        axios.get(`http://www.mapquestapi.com/directions/v2/route?key=${process.env.MAPQUEST_API_KEY}&from=${from.street},${from.city},${from.state}&to=${to.street},+${to.city},+${to.state}`)
-        .then(response => {
-          store.Direction.directions = response.data;
-          store.Direction.directions.maneuvers = response.data.route.legs[0].maneuvers;
-          router.navigate("/Direction");
-        })
-        .catch(error => {
-          console.log("It puked", error);
-        });
+
+        /*
+          Please refer to the documentation:
+          https://developer.mapquest.com/documentation/directions-api/
+        */
+
+        axios.get(`http://www.mapquestapi.com/directions/v2/route?key=${process.env.MAPQUEST_API_KEY}&from=${from.street},+${from.city},+${from.state}&to=${to.street},+${to.city},+${to.state}`)
+          .then(response => {
+            store.Direction.directions = response.data;
+            store.Direction.directions.maneuvers = response.data.route.legs[0].maneuvers;
+            router.navigate("/Direction");
+          })
+          .catch(error => {
+            console.log("It puked", error);
+          });
       }
 
       if (event.submitter.name === "showRoute") {
-        router.navigate("/Map");
+        router.navigate("/Route");
       }
     });
+  }
+
+  if (state.view === "Map") {
+
+    /*
+      Please refer to the documentation:
+      https://developer.mapquest.com/documentation/mapquest-js/v1.3/
+    */
+
+    L.mapquest.key = process.env.MAPQUEST_API_KEY;
+
+    // 'map' refers to a <div> element with the ID map
+    const map = L.mapquest.map('map', {
+      center: [42, -71],
+      layers: [
+        L.mapquest.tileLayer('map'),
+        // Add OpenWeatherMap precipitation layer to the map
+        L.tileLayer(
+          `https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid=${process.env.OPEN_WEATHER_MAP_API_KEY}`,
+          { layer: "precipitation_new" }
+        )
+      ],
+      zoom: 5
+    });
+
+    L.mapquest
+      .textMarker([42, -71], {
+        text: "Sample Marker",
+        subtext: "Click Here for More Details",
+        position: "right",
+        type: "marker",
+        hover: "Howdy",
+        icon: {
+          primaryColor: "#333333",
+          secondaryColor: "#333333",
+          size: "sm"
+        }
+      })
+      .addTo(map);
+
+      L.marker([30, -90], {
+        icon: L.mapquest.icons.marker({
+          primaryColor: '#22407F',
+          secondaryColor: '#3B5998',
+          shadow: true,
+          size: 'md'
+          // symbol: 'T'
+        })
+      })
+      .addTo(map);
+
+    map.addControl(L.mapquest.control());
+
+    L.mapquest.directionsControl({
+      routeSummary: {
+        enabled: false
+      },
+      narrativeControl: {
+        enabled: true,
+        compactResults: false
+      }
+    }).addTo(map);
   }
 }
 
