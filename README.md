@@ -1,3 +1,1 @@
-### This is the Class SPA for August 2022 :)
-
-## Matt is a really cool dude :)
+### Example SPA using the MapQuest library and the OpenWeatherMap API to display overlays
