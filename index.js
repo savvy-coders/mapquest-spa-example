@@ -65,10 +65,14 @@ function afterRender(state) {
           https://developer.mapquest.com/documentation/directions-api/
         */
 
-        axios.get(`http://www.mapquestapi.com/directions/v2/route?key=${process.env.MAPQUEST_API_KEY}&from=${from.street},+${from.city},+${from.state}&to=${to.street},+${to.city},+${to.state}`)
+        axios
+          .get(
+            `http://www.mapquestapi.com/directions/v2/route?key=${process.env.MAPQUEST_API_KEY}&from=${from.street},+${from.city},+${from.state}&to=${to.street},+${to.city},+${to.state}`
+          )
           .then(response => {
             store.Direction.directions = response.data;
-            store.Direction.directions.maneuvers = response.data.route.legs[0].maneuvers;
+            store.Direction.directions.maneuvers =
+              response.data.route.legs[0].maneuvers;
             router.navigate("/Direction");
           })
           .catch(error => {
@@ -83,7 +87,6 @@ function afterRender(state) {
   }
 
   if (state.view === "Map") {
-
     /*
       Please refer to the documentation:
       https://developer.mapquest.com/documentation/mapquest-js/v1.3/
@@ -91,17 +94,24 @@ function afterRender(state) {
 
     L.mapquest.key = process.env.MAPQUEST_API_KEY;
 
+    const baseLayer = L.mapquest.tileLayer("map");
+    const precipitationLayer = L.tileLayer(
+      `https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid=${process.env.OPEN_WEATHER_MAP_API_KEY}`,
+      { layer: "precipitation_new" }
+    );
+    const temperatureLayer = L.tileLayer(
+      `https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid=${process.env.OPEN_WEATHER_MAP_API_KEY}`,
+      { layer: "temp_new" }
+    );
+    const windLayer = L.tileLayer(
+      `https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid=${process.env.OPEN_WEATHER_MAP_API_KEY}`,
+      { layer: "wind_new" }
+    );
+
     // 'map' refers to a <div> element with the ID map
-    const map = L.mapquest.map('map', {
+    const map = L.mapquest.map("map", {
       center: [42, -71],
-      layers: [
-        L.mapquest.tileLayer('map'),
-        // Add OpenWeatherMap precipitation layer to the map
-        L.tileLayer(
-          `https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid=${process.env.OPEN_WEATHER_MAP_API_KEY}`,
-          { layer: "precipitation_new" }
-        )
-      ],
+      layers: baseLayer,
       zoom: 5
     });
 
@@ -120,28 +130,41 @@ function afterRender(state) {
       })
       .addTo(map);
 
-      L.marker([30, -90], {
-        icon: L.mapquest.icons.marker({
-          primaryColor: '#22407F',
-          secondaryColor: '#3B5998',
-          shadow: true,
-          size: 'md'
-          // symbol: 'T'
-        })
+    L.marker([30, -90], {
+      icon: L.mapquest.icons.marker({
+        primaryColor: "#22407F",
+        secondaryColor: "#3B5998",
+        shadow: true,
+        size: "md"
+        // symbol: 'T'
       })
-      .addTo(map);
+    }).addTo(map);
 
     map.addControl(L.mapquest.control());
 
-    L.mapquest.directionsControl({
-      routeSummary: {
-        enabled: false
-      },
-      narrativeControl: {
-        enabled: true,
-        compactResults: false
-      }
-    }).addTo(map);
+    L.mapquest
+      .directionsControl({
+        routeSummary: {
+          enabled: false
+        },
+        narrativeControl: {
+          enabled: true,
+          compactResults: false
+        }
+      })
+      .addTo(map);
+
+    // https://leafletjs.com/reference.html#control-layers
+    L.control
+      .layers(
+        {},
+        {
+          Temperature: temperatureLayer,
+          Precipitation: precipitationLayer,
+          Wind: windLayer
+        }
+      )
+      .addTo(map);
   }
 }
 
